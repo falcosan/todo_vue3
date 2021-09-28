@@ -12,7 +12,7 @@
 <script>
 import Form from "./FormComponent.vue";
 import Item from "./ItemComponent.vue";
-import { ref } from 'vue'
+import { ref, onUpdated } from 'vue'
 export default {
   components: { Form, Item },
   setup() {
@@ -22,6 +22,9 @@ export default {
      })
      const setItems = localStorage['storageItems'] ? JSON.parse(localStorage.getItem('storageItems')) : [];
      const items = ref(setItems)
+     onUpdated(()=>{
+       saveStorage()
+     })
       function addItem () {
           if (newItem.value.val) {
               items.value.push(newItem.value)
@@ -32,9 +35,9 @@ export default {
             saveStorage();
           }
       }
-      function saveStorage() {
-           localStorage.setItem('storageItems', JSON.stringify(items.value))
-      }
+    function saveStorage() {
+        localStorage.setItem('storageItems', JSON.stringify(items.value))
+    }
     function removeItem (key) {
         items.value.splice(key, 1)
     }

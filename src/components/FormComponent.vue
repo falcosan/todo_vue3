@@ -23,6 +23,7 @@
 		</div>
 </template>
 <script>
+import { ref, toRefs } from 'vue'
 export default {
 props: {
     inputValue: {
@@ -30,22 +31,25 @@ props: {
       default: ''
     }
 },
-data(){
-    return{
-        valuePassed: true
-    }
-},
-methods:{
-checkItem(){
-    if(!this.inputValue){
-        this.valuePassed = false
-    } else {
-        this.valuePassed = true
-    }
-        },
-        addItem(){
-            this.checkItem()
-            this.$emit('addItem')
+    setup(props, { emit }){
+        const { inputValue } = toRefs(props)
+        const valuePassed = ref(true)
+        function checkItem() {
+            if(!inputValue.value){
+                valuePassed.value = false
+            } else {
+                valuePassed.value = true
+            }
+        }
+        function addItem(){
+                checkItem()
+                emit('addItem')
+            
+        }
+        return {
+            valuePassed,
+            checkItem,
+            addItem
         }
     }
 }

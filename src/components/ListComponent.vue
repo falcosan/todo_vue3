@@ -2,54 +2,57 @@
 <div class="list container max-w-5xl mx-auto mt-10 mb-0 overflow-hidden rounded font-mono bg-gray-100">
 	<div class="flex flex-col bg-gray-200">
 		<h1 class="list-title text-center mt-5 mb-2.5 text-3xl italic">todo today</h1>
-      <Form @addItem="addItem" @clearAll="clearAll" v-model:input-value="newItem.value"/>
+      <Form @addItem="addItem" @clearAll="clearAll" v-model:input-value="newItem.val"/>
     </div>
     <ul class="list-items h-full py-2.5 px-5 overflow-y-scroll">
-      <Item v-for="(item, index) in items" :class="`${index === 0 ? '' : 'mt-2.5'}`" :item-value="item.value" :key="`item-${index}`" v-model:item-check="item.checked" @removeItem="removeItem(index)"/>
+      <Item v-for="(item, index) in items" :class="`${index === 0 ? '' : 'mt-2.5'}`" :item-value="item.val" :key="`item-${index}`" v-model:item-check="item.checked" @removeItem="removeItem(index)"/>
     </ul>
 </div>
 </template>
 <script>
 import Form from "./FormComponent.vue";
 import Item from "./ItemComponent.vue";
+import { ref } from 'vue'
 export default {
   components: { Form, Item },
-  data() {
-    return { 
-      newItem: {
-        value: '',
-        checked: false
-      },
-      items: []
-    };
-  },
-  mounted(){
-    localStorage['storageItems'] ? this.items = JSON.parse(localStorage.getItem('storageItems')) : []
-  },
-  updated(){
-   localStorage.setItem('storageItems', JSON.stringify(this.items))
-  },
-  methods: {
-		addItem () {
-      if (this.newItem.value) {
-        this.items.push(this.newItem)
-        this.newItem = {
-        value: '',
-        checked: false
+  setup() {
+    const newItem = ref({
+      val: '',
+      checked: false
+     })
+     const setItems = localStorage['storageItems'] ? JSON.parse(localStorage.getItem('storageItems')) : [];
+     const items = ref(setItems)
+      function addItem () {
+          if (newItem.value.val) {
+              items.value.push(newItem.value)
+              newItem.value = {
+                val: '',
+                checked: false
+            }
+            saveStorage();
+          }
       }
+      function saveStorage() {
+           localStorage.setItem('storageItems', JSON.stringify(items.value))
       }
-		},
-    removeItem (key) {
-      this.items.splice(key, 1)
-		},
-		clearAll () {
-			this.items = []
-        this.newItem = {
+    function removeItem (key) {
+        items.value.splice(key, 1)
+    }
+    function clearAll () {
+			items.value = []
+        newItem.value = {
         value: '',
         checked: false
       },
       localStorage.removeItem('storageItems');
 		}
-	}
+    return {
+      newItem,
+      items,
+      addItem,
+      removeItem,
+      clearAll
+      }
+  }
 };
 </script>

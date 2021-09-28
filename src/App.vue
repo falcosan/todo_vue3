@@ -1,5 +1,5 @@
 <template>
-  <List msg="Welcome to Your Vue.js App"/>
+  <List />
 </template>
 
 <script>
